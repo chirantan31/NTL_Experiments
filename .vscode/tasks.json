@@ -1,0 +1,32 @@
+{
+    "version": "2.0.0",
+    "windows": {
+        "options": {
+            "shell": {
+                "executable": "C:\\Windows\\System32\\bash.exe",
+                "args": ["-c"]
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "build hello world on WSL",
+            "type": "shell",
+            "command": "g++",
+            "args": [
+                "funcs.cpp",
+                "-g",
+                "-o",
+                "/mnt/d/MPC/new_ubuntu/src/funcs.out",
+                "-lntl",
+                "-pthread",
+                "-lgmp"
+                
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

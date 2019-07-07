@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "(gdb) Launch",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "/mnt/d/MPC/new_ubuntu/src/funcs.out",
+                "args": [""],
+                "stopAtEntry": true,
+                "cwd": "/mnt/d/MPC/new_ubuntu/src/",
+                "environment": [],
+                "externalConsole": true,
+                "windows": {
+                    "MIMode": "gdb",
+                    "miDebuggerPath": "/usr/bin/gdb",
+                    "setupCommands": [
+                        {
+                            "description": "Enable pretty-printing for gdb",
+                            "text": "-enable-pretty-printing",
+                            "ignoreFailures": true
+                        }
+                    ]
+                },
+                "pipeTransport": {
+                    "pipeCwd": "",
+                    "pipeProgram": "C:\\Windows\\System32\\bash.exe",
+                    "pipeArgs": ["-c"],
+                    "debuggerPath": "/usr/bin/gdb"
+                },
+                "sourceFileMap": {
+                    "/usr": "C:\\Users\\chira\\AppData\\Local\\Packages\\CanonicalGroupLimited.Ubuntu18.04onWindows_79rhkp1fndgsc\\LocalState\\rootfs\\usr\\"
+                }
+            }
+        ]
+    }
