@@ -17,6 +17,7 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/assume_abstract.hpp>
+#include "../hps-master/src/hps.h"
 
 #include <chrono> 
 
@@ -88,19 +89,30 @@ void ZZ_pToVecLimb(vector<ZZ_limb_t> &limbs, ZZ_p &x) {
 
 class OpaqueZZp {
    public:
-        vector<ZZ_limb_t> limbs;
-        friend class boost::serialization::access;
-        // When the class Archive corresponds to an output archive, the
-        // & operator is defined similar to <<.  Likewise, when the class Archive
-        // is a type of input archive the & operator is defined similar to >>.
-        template<class Archive>
-        void serialize(Archive & ar, const unsigned int version)
-        {
-            ar & limbs;            
+        long size;
+        ZZ_limb_t *l;
+
+        template <class B>
+        void serialize(B& buf) const {
+            buf << size;
+            for(int i =0; i<size; i++){
+                buf << l[i];
+            }
+        }
+
+        template <class B>
+        void parse(B& buf) {
+            buf >> size;
+            l = new ZZ_limb_t[size];
+            for(int i =0; i<size; i++){
+                buf >> l[i];
+            }
         }
 
         OpaqueZZp(ZZ_p &zzp) {
-            ZZ_pToVecLimb(limbs, zzp);
+            ZZ zz = rep(zzp);
+            size = zz.size();
+            l = const_cast<ZZ_limb_t*>(ZZ_limbs_get(zz));
         }
         OpaqueZZp(){}
         void OpaqueZZpToString(std::string &ss) {
@@ -108,13 +120,15 @@ class OpaqueZZp {
         }
         static void StringToZZp(ZZ_p &zzp, std::string &ss) {            
             OpaqueZZp ozzp2;
-            StringSerializer<OpaqueZZp>::StringToOpaque(ozzp2, ss);
-            VecLimbToZZ_p(zzp, ozzp2.limbs);
+            hps::from_string<OpaqueZZp>(ss, ozzp2);
+            ZZ a;
+            ZZ_limbs_set(a, ozzp2.l, ozzp2.size);
+            zzp =  to_ZZ_p(a);
         }
 
         static void ZZpToString(std::string &ss, ZZ_p &zzp) {
             OpaqueZZp ozzp2(zzp);
-            StringSerializer<OpaqueZZp>::OpaqueToString(ss, ozzp2);
+            hps::to_string(ozzp2, ss);
         }    
 };
 
@@ -127,11 +141,10 @@ void ZZ_pToLimbs(ZZ_limbs &limbs, ZZ_p &x) {
 }
 
 int main() {
-   
    const char* P = "52435875175126190479447740508185965837690552500527637822603658699938581184513";
    const char* A = "94606641538518525124626052516448957590052573267403774387184360108182625896033";
-   // const char* B = "12807130640567138200355688980399645868673927563246444718103192941204902114090";
-   const char* B = "12807130640567138200355";
+   const char* B = "12807130640567138200355688980399645868673927563246444718103192941204902114090";
+   
    float tests = 10000000.0;
 
    string aString(A);
@@ -156,23 +169,20 @@ int main() {
 //    auto elapsed = end - start;
 //    std::cout << elapsed.count() << '\n';
 
-   ZZ_limbs zl1;
-   ZZ_pToLimbs(zl1, ZZpa);
-   ZZ_p zzps;
-   LimbsToZZ_p(zzps, zl1);
-   cout << zl1 << endl;
-   cout << zzps << endl;
+//    ZZ_limbs zl1;
+//    ZZ_pToLimbs(zl1, ZZpa);
+//    ZZ_p zzps;
+//    LimbsToZZ_p(zzps, zl1);
+//    cout << zl1 << endl;
+//    cout << zzps << endl;
 
-    // std::string x;
-    // ZZ_p ZZpx;
-    // OpaqueZZp::ZZpToString(x, ZZpa);
+    std::string x;
+    ZZ_p ZZpx;
+    OpaqueZZp::ZZpToString(x, ZZpa);
     // cout << x << endl;
-    
-    // OpaqueZZp::StringToZZp(ZZpx, x);
-    // cout << ZZpa << endl;
-
-
-   
+    // cout << "hello" << endl;
+    OpaqueZZp::StringToZZp(ZZpx, x);
+    cout << ZZpx << endl; 
 
    
    
