@@ -26,6 +26,7 @@ using namespace NTL;
 
 // typedef vector<ZZ_limb_t> ZZ_limbs;
 typedef std::string ZZ_limbs;
+// typedef const char* ZZ_limbs;
 
 
 
@@ -125,46 +126,6 @@ void ZZ_pToLimbs(ZZ_limbs &limbs, ZZ_p &x) {
     OpaqueZZp::ZZpToString(limbs, x);
 }
 
-void vec_ZZ_pToVecLimbs(vector<ZZ_limbs> &serializedRow, vec_ZZ_p &row) {
-    long l = row.length();
-    serializedRow.resize(l);
-    for(long i = 0; i<l; i++) {
-        ZZ_pToLimbs(serializedRow[i], row[i]);
-    }
-}
-
-void VecLimbsToVec_ZZ_p(vec_ZZ_p &row, vector<ZZ_limbs> &serializedRow) {
-    row.SetLength(serializedRow.size());
-    for (int i=0; i< serializedRow.size(); i++) {
-        LimbsToZZ_p(row[i], serializedRow[i]);
-    }
-}
-
-void mat_ZZ_pToVecVecLimbs(vector<vector<ZZ_limbs>> &serializedRows, mat_ZZ_p &a) {
-   long rows = a.NumRows();
-   serializedRows.resize(rows);
-   for(long i = 0; i < rows; i++) {
-       vec_ZZ_pToVecLimbs(serializedRows[i], a[i]);
-   }
-}
-
-// mat_ZZ_p& VecVecLimbsToMat_ZZ_p(vector<vector<ZZ_limbs>> &serializedRows) {
-//    Vec<Vec<ZZ_p>> rows;
-//    for(vector<ZZ_limbs> r: serializedRows) {
-//        rows.append(VecLimbsToVec_ZZ_p(r));
-//    }
-//    mat_ZZ_p res;
-//    MakeMatrix(res, rows);
-//    return res;
-// }
-
-void mat_mul_serialize(vector<vector<ZZ_limbs>> &r, mat_ZZ_p &a, mat_ZZ_p &b) {
-   mat_ZZ_p res;
-   mul(res, a, b);
-   mat_ZZ_p t = transpose(res);
-   mat_ZZ_pToVecVecLimbs(r, t);
-}
-
 int main() {
    
    const char* P = "52435875175126190479447740508185965837690552500527637822603658699938581184513";
@@ -190,26 +151,11 @@ int main() {
    ZZpa = to_ZZ_p(ZZa);
    ZZpb = to_ZZ_p(ZZb);
 
-   Vec<ZZ> x;
-   x.append(ZZa);
-   x.append(ZZb);
-   x.append(ZZb);
+   // auto start = std::chrono::system_clock::now();
+//    auto end = std::chrono::system_clock::now();
+//    auto elapsed = end - start;
+//    std::cout << elapsed.count() << '\n';
 
-   long ZZsize = ZZa.size();
-   const ZZ_limb_t *ZZlimbs = ZZ_limbs_get(ZZa);
-//    for (int i =0; i< ZZsize + 6; i++) {
-//             // limbs.push_back(l[i]);
-//             cout<< "ZZa: "<< "i:" << i << " " << *(ZZlimbs + i) << endl;
-//    }
-//    cout << endl;
-
-   ZZ *first = x.elts();
-   const ZZ_limb_t *l1 = ZZ_limbs_get(*first);
-   long s1 = (*first).size();
-   long s2 = (*(first + 1)).size();
-   const ZZ_limb_t *l2 = ZZ_limbs_get((*(first+1)));
-
-   auto start = std::chrono::system_clock::now();
    ZZ_limbs zl1;
    ZZ_pToLimbs(zl1, ZZpa);
    ZZ_p zzps;
@@ -217,9 +163,16 @@ int main() {
    cout << zl1 << endl;
    cout << zzps << endl;
 
-   auto end = std::chrono::system_clock::now();
-   auto elapsed = end - start;
-   std::cout << elapsed.count() << '\n';
+    // std::string x;
+    // ZZ_p ZZpx;
+    // OpaqueZZp::ZZpToString(x, ZZpa);
+    // cout << x << endl;
+    
+    // OpaqueZZp::StringToZZp(ZZpx, x);
+    // cout << ZZpa << endl;
+
+
+   
 
    
    
